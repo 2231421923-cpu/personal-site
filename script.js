@@ -3,6 +3,9 @@ const hero = document.querySelector(".hero");
 const heroStage = document.querySelector(".hero-stage");
 const heroVideo = document.querySelector(".hero-video");
 const brand = document.querySelector(".brand");
+const siteHeader = document.querySelector(".site-header");
+const menuToggle = document.querySelector(".menu-toggle");
+const navLinks = document.querySelectorAll(".nav a");
 const revealItems = document.querySelectorAll(".reveal");
 const abilityStack = document.querySelector(".ability-stack-container");
 const abilityCards = Array.from(document.querySelectorAll(".ability-card"));
@@ -28,30 +31,64 @@ let scrollStackMetrics = [];
 let scrollStackEndTop = 0;
 let scrollFrame = 0;
 let lastAnimationTime = 0;
+let canvasFrame = 0;
+let resizeFrame = 0;
 const pointer = { x: window.innerWidth / 2, y: window.innerHeight / 2, speed: 0 };
 
-window.addEventListener("load", () => {
+function dismissLoader() {
+  if (!loader || loader.classList.contains("done")) return;
+  loader.classList.add("done");
+  window.setTimeout(() => loader.remove(), 900);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
   window.scrollTo(0, 0);
-  setTimeout(() => loader.classList.add("done"), 1250);
+  window.setTimeout(dismissLoader, 450);
+});
+
+window.setTimeout(dismissLoader, 2200);
+
+window.addEventListener("load", () => {
   measureScrollStack();
   scheduleScrollEffects();
 });
 
 if (heroVideo && heroStage) {
-  const enableHeroVideo = () => {
-    heroStage.classList.add("video-ready");
-    heroVideo.play().catch(() => {
-      heroStage.classList.remove("video-ready");
-    });
+  heroVideo.muted = true;
+
+  const tryHeroVideo = () => {
+    const playback = heroVideo.play();
+    if (playback) playback.catch(() => heroStage.classList.remove("video-ready"));
   };
 
-  const disableHeroVideo = () => {
-    heroStage.classList.remove("video-ready");
-  };
+  heroVideo.addEventListener("playing", () => heroStage.classList.add("video-ready"));
+  heroVideo.addEventListener("error", () => heroStage.classList.remove("video-ready"));
+  heroVideo.addEventListener("canplay", tryHeroVideo, { once: true });
+  document.addEventListener("pointerdown", tryHeroVideo, { once: true, passive: true });
+  tryHeroVideo();
+}
 
-  heroVideo.addEventListener("canplay", enableHeroVideo, { once: true });
-  heroVideo.addEventListener("error", disableHeroVideo);
-  if (heroVideo.readyState >= 3) enableHeroVideo();
+function closeMenu() {
+  if (!siteHeader || !menuToggle) return;
+  siteHeader.classList.remove("menu-open");
+  document.body.classList.remove("menu-open");
+  menuToggle.setAttribute("aria-expanded", "false");
+  menuToggle.setAttribute("aria-label", "打开导航");
+}
+
+if (siteHeader && menuToggle) {
+  menuToggle.addEventListener("click", () => {
+    const willOpen = !siteHeader.classList.contains("menu-open");
+    siteHeader.classList.toggle("menu-open", willOpen);
+    document.body.classList.toggle("menu-open", willOpen);
+    menuToggle.setAttribute("aria-expanded", `${willOpen}`);
+    menuToggle.setAttribute("aria-label", willOpen ? "关闭导航" : "打开导航");
+  });
+
+  navLinks.forEach((link) => link.addEventListener("click", closeMenu));
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeMenu();
+  });
 }
 
 const observer = new IntersectionObserver((entries) => {
@@ -82,22 +119,16 @@ keywordButtons.forEach((button) => {
 
 function layoutAbilityStack() {
   if (!abilityCards.length) return;
-  if (window.innerWidth < 701) {
-    abilityCards.forEach((card) => {
-      card.style.transform = "";
-      card.style.zIndex = "";
-      card.style.opacity = "";
-    });
-    return;
-  }
+  const isMobile = window.innerWidth < 701;
 
   abilityCards.forEach((card, index) => {
     const random = Number(card.dataset.randomRotate || 0);
     const depth = abilityCards.length - index - 1;
-    const rotate = depth * 5 + random;
-    const scale = 1 + index * 0.065 - abilityCards.length * 0.06;
-    const x = (index - abilityCards.length / 2) * 8;
-    const y = depth * 12;
+    const rotate = depth * (isMobile ? 1.2 : 5) + random * (isMobile ? 0.45 : 1);
+    const scaleStep = isMobile ? 0.035 : 0.065;
+    const scale = 1 + index * scaleStep - abilityCards.length * (isMobile ? 0.032 : 0.06);
+    const x = (index - abilityCards.length / 2) * (isMobile ? 3 : 8);
+    const y = depth * (isMobile ? 8 : 12);
     card.style.zIndex = `${index + 1}`;
     card.style.opacity = `${0.72 + index * 0.08}`;
     card.style.transform = `translate3d(${x}px, ${y}px, 0) rotateZ(${rotate}deg) scale(${scale})`;
@@ -117,7 +148,6 @@ abilityCards.forEach((card, index) => {
   let drag = null;
 
   card.addEventListener("pointerdown", (event) => {
-    if (window.innerWidth < 701) return;
     if (abilityCards[abilityCards.length - 1] !== card) {
       sendAbilityToBack(card);
       return;
@@ -134,6 +164,7 @@ abilityCards.forEach((card, index) => {
     if (!drag) return;
     const dx = event.clientX - drag.startX;
     const dy = event.clientY - drag.startY;
+    if (window.innerWidth < 701 && Math.abs(dy) > Math.abs(dx)) return;
     const rotateX = Math.max(-60, Math.min(60, dy * -0.35));
     const rotateY = Math.max(-60, Math.min(60, dx * 0.35));
     card.style.transform = `translate3d(${dx}px, ${dy}px, 0) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotateZ(0deg) scale(1)`;
@@ -145,15 +176,21 @@ abilityCards.forEach((card, index) => {
     const dy = event.clientY - drag.startY;
     card.classList.remove("is-dragging");
     drag = null;
-    if (Math.hypot(dx, dy) > 170) {
+    const threshold = window.innerWidth < 701 ? 70 : 170;
+    if (Math.abs(dx) > threshold || (window.innerWidth >= 701 && Math.hypot(dx, dy) > threshold)) {
       sendAbilityToBack(card);
     } else {
       layoutAbilityStack();
     }
   });
 
+  card.addEventListener("pointercancel", () => {
+    card.classList.remove("is-dragging");
+    drag = null;
+    layoutAbilityStack();
+  });
+
   card.addEventListener("click", () => {
-    if (window.innerWidth < 701) return;
     if (abilityCards[abilityCards.length - 1] === card) {
       sendAbilityToBack(card);
     }
@@ -170,23 +207,16 @@ function measureScrollStack() {
 }
 
 function updateScrollStack() {
-  if (!scrollStackCards.length || window.innerWidth < 701) {
-    scrollStackCards.forEach((card) => {
-      card.style.transform = "";
-      card.style.filter = "";
-      card.style.zIndex = "";
-      card.style.opacity = "";
-    });
-    return;
-  }
+  if (!scrollStackCards.length) return;
 
   if (scrollStackMetrics.length !== scrollStackCards.length) measureScrollStack();
 
-  const stackPositionPx = window.innerHeight * 0.2;
-  const scaleEndPositionPx = window.innerHeight * 0.1;
-  const itemScale = 0.03;
-  const itemStackDistance = 30;
-  const baseScale = 0.85;
+  const isMobile = window.innerWidth < 701;
+  const stackPositionPx = window.innerHeight * (isMobile ? 0.13 : 0.2);
+  const scaleEndPositionPx = window.innerHeight * (isMobile ? 0.07 : 0.1);
+  const itemScale = isMobile ? 0.018 : 0.03;
+  const itemStackDistance = isMobile ? 18 : 30;
+  const baseScale = isMobile ? 0.9 : 0.85;
 
   let topCardIndex = 0;
   scrollStackMetrics.forEach((cardTop, index) => {
@@ -255,7 +285,7 @@ function closeQr() {
 }
 
 function sizeCanvas(canvas, ctx) {
-  const ratio = window.devicePixelRatio || 1;
+  const ratio = Math.min(window.devicePixelRatio || 1, window.innerWidth < 701 ? 1.5 : 2);
   canvas.width = window.innerWidth * ratio;
   canvas.height = window.innerHeight * ratio;
   canvas.style.width = `${window.innerWidth}px`;
@@ -266,7 +296,9 @@ function sizeCanvas(canvas, ctx) {
 function resize() {
   sizeCanvas(ambientCanvas, ambientCtx);
   sizeCanvas(dotCanvas, dotCtx);
-  ambientDots = Array.from({ length: Math.min(95, Math.floor(window.innerWidth / 15)) }, () => ({
+  const dotLimit = window.innerWidth < 701 ? 36 : 95;
+  const dotDivisor = window.innerWidth < 701 ? 18 : 15;
+  ambientDots = Array.from({ length: Math.min(dotLimit, Math.floor(window.innerWidth / dotDivisor)) }, () => ({
     x: Math.random() * window.innerWidth,
     y: Math.random() * window.innerHeight,
     vx: (Math.random() - 0.5) * 0.3,
@@ -277,7 +309,7 @@ function resize() {
 }
 
 function buildDotGrid() {
-  const gap = window.innerWidth < 700 ? 34 : 42;
+  const gap = 42;
   const size = window.innerWidth < 700 ? 3.2 : 4.2;
   const cols = Math.ceil(window.innerWidth / gap) + 2;
   const rows = Math.ceil(window.innerHeight / gap) + 2;
@@ -356,15 +388,19 @@ function drawDotGrid() {
 }
 
 function animate(time = 0) {
+  if (document.hidden) {
+    canvasFrame = 0;
+    return;
+  }
   if (time - lastAnimationTime > 32) {
     drawAmbient();
     drawDotGrid();
     lastAnimationTime = time;
   }
-  requestAnimationFrame(animate);
+  canvasFrame = requestAnimationFrame(animate);
 }
 
-document.addEventListener("mousemove", (event) => {
+function updatePointer(event) {
   const now = performance.now();
   const dt = Math.max(16, now - (lastPointer.t || now));
   const vx = ((event.clientX - lastPointer.x) / dt) * 1000;
@@ -376,7 +412,7 @@ document.addEventListener("mousemove", (event) => {
   document.documentElement.style.setProperty("--mx", `${event.clientX}px`);
   document.documentElement.style.setProperty("--my", `${event.clientY}px`);
 
-  if (heroStage && !hero.classList.contains("signature-on")) {
+  if (event.pointerType !== "touch" && heroStage && !hero.classList.contains("signature-on")) {
     const rect = heroStage.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
@@ -384,7 +420,9 @@ document.addEventListener("mousemove", (event) => {
     const ry = (event.clientX - cx) / rect.width;
     heroStage.style.transform = `rotateX(${rx * -3}deg) rotateY(${ry * 4}deg)`;
   }
-});
+}
+
+document.addEventListener("pointermove", updatePointer, { passive: true });
 
 document.addEventListener("click", (event) => {
   gridDots.forEach((dot) => {
@@ -406,10 +444,18 @@ resize();
 layoutAbilityStack();
 measureScrollStack();
 updateScrollStack();
-animate();
+canvasFrame = requestAnimationFrame(animate);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && !canvasFrame) canvasFrame = requestAnimationFrame(animate);
+});
 window.addEventListener("resize", () => {
-  resize();
-  layoutAbilityStack();
-  measureScrollStack();
-  updateScrollStack();
+  if (resizeFrame) cancelAnimationFrame(resizeFrame);
+  resizeFrame = requestAnimationFrame(() => {
+    resize();
+    layoutAbilityStack();
+    measureScrollStack();
+    updateScrollStack();
+    if (window.innerWidth >= 701) closeMenu();
+    resizeFrame = 0;
+  });
 });
