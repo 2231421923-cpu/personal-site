@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MARK // AI EVALUATION EXPERT</title>
+  <link rel="stylesheet" href="styles.css?v=20260608-1">
+</head>
+<body>
+  <div class="loader" aria-hidden="true">
+    <div class="loader-glow"></div>
+    <div class="loader-mark" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>
+    <div class="loader-word">
+      <span>M</span><span>A</span><span>R</span><span>K</span>
+    </div>
+    <div class="loader-foot">LOADING, PLEASE WAIT <i>....</i></div>
+  </div>
+
+  <canvas id="dot-grid" aria-hidden="true"></canvas>
+  <canvas id="ambient-canvas" aria-hidden="true"></canvas>
+
+  <header class="site-header">
+    <a class="brand" href="#hero" aria-label="Back to top">
+      <span>M</span><span>A</span><span>R</span><span>K</span>
+    </a>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="#about">ABOUT</a>
+      <a href="#skills">CAN DO</a>
+      <a href="#work">DONE</a>
+      <a href="#partners">TOOLS</a>
+      <a href="#contact">CONTACT</a>
+    </nav>
+    <button class="lang" type="button"><span>⇄</span> CN</button>
+  </header>
+
+  <main>
+    <section id="hero" class="hero section">
+      <div class="hero-marquee hero-marquee-dark">
+        <span>MODEL EVALUATION · DATA TRAINING · MARK · </span>
+        <span>MODEL EVALUATION · DATA TRAINING · MARK · </span>
+      </div>
+      <div class="hero-marquee hero-marquee-orange">
+        <span>DECODING OUTPUTS · ALIGNING STANDARDS · </span>
+        <span>DECODING OUTPUTS · ALIGNING STANDARDS · </span>
+      </div>
+
+      <div class="hero-stage reveal">
+        <video class="hero-video" muted loop playsinline preload="metadata" aria-hidden="true">
+          <source src="assets/hero-lab-loop.mp4" type="video/mp4">
+        </video>
+        <div class="hero-video-fx" aria-hidden="true">
+          <span class="lab-node node-a"></span>
+          <span class="lab-node node-b"></span>
+          <span class="lab-node node-c"></span>
+          <span class="lab-line line-a"></span>
+          <span class="lab-line line-b"></span>
+          <span class="lab-panel panel-a"></span>
+          <span class="lab-panel panel-b"></span>
+        </div>
+        <div class="mg-scene" aria-label="Animated AI evaluation scene">
+          <div class="mg-orbit orbit-a"></div>
+          <div class="mg-orbit orbit-b"></div>
+          <div class="mg-core">
+            <div class="mg-head"></div>
+            <div class="mg-visor"></div>
+            <div class="mg-scan"></div>
+          </div>
+          <span class="mg-chip chip-a">DATA</span>
+          <span class="mg-chip chip-b">SCORE</span>
+          <span class="mg-chip chip-c">QA</span>
+        </div>
+        <div class="hero-letter">MARK</div>
+      </div>
+
+      <svg class="signature" viewBox="0 0 1200 520" aria-hidden="true">
+        <path d="M90 315 C 255 180, 440 92, 650 94 C 815 96, 910 148, 930 224 C 950 300, 865 326, 775 308 C 660 284, 540 210, 472 292 C 423 352, 443 432, 515 382 C 585 334, 610 250, 658 254 C 728 260, 690 410, 780 408 C 865 406, 920 284, 990 304 C 1032 316, 1018 370, 954 422" />
+        <path d="M410 330 C 458 244, 520 160, 600 80 C 548 180, 500 282, 470 410" />
+      </svg>
+
+      <div class="hero-meta left">
+        <span>ROLE</span>
+        <strong>AI评测专家</strong>
+      </div>
+      <div class="hero-meta right">
+        <i></i>
+        <strong>Decoding Outputs<br>Aligning Standards</strong>
+      </div>
+    </section>
+
+    <section id="about" class="about keyword-section section">
+      <div class="section-head reveal">
+        <h2>ABOUT ME</h2>
+        <p>MARKAI是关于我的6个关键词，欢迎了解我:</p>
+      </div>
+      <div class="keyword-stage reveal">
+        <div class="keyword-copy">
+          <span id="keyword-index">01</span>
+          <h3 id="keyword-title">Model-minded</h3>
+          <p id="keyword-text">理解模型输出背后的意图、边界和失误模式，把评测从主观判断变成可复盘的标准。</p>
+        </div>
+        <button class="keyword-letter keyword-letter-a is-active" type="button" data-index="01" data-title="Model-minded" data-text="理解模型输出背后的意图、边界和失误模式，把评测从主观判断变成可复盘的标准。">M</button>
+        <button class="keyword-letter keyword-letter-b" type="button" data-index="02" data-title="Accurate" data-text="关注事实、口径和细节，把 Caption、视觉理解、文本任务的质量误差压到可控范围。">A</button>
+        <button class="keyword-letter keyword-letter-c" type="button" data-index="03" data-title="Rigorous" data-text="用 SOP、质检、抽样和复盘机制建立稳定产线，让数据和评测结果经得起追问。">R</button>
+        <button class="keyword-letter keyword-letter-d" type="button" data-index="04" data-title="Knowledgeable" data-text="熟悉多模态、文本、图像和 AI 工具链，把领域知识转成可执行的判断标准。">K</button>
+        <button class="keyword-letter keyword-letter-e" type="button" data-index="05" data-title="Analytical" data-text="从错误类型、样本分布和模型行为里找规律，给出能落地的优化方向。">A</button>
+        <button class="keyword-letter keyword-letter-f" type="button" data-index="06" data-title="Iterative" data-text="把评测结果反向推动数据、Prompt 和流程迭代，让每一轮产出都更接近目标。">I</button>
+      </div>
+    </section>
+
+    <section id="skills" class="skills capability-section section">
+      <div class="section-head reveal">
+        <h2>WHAT I CAN DO</h2>
+        <p>从底层数据训练、模型评测、到前端视觉呈现，提供多维度的专业能力储备。</p>
+      </div>
+      <div class="ability-stack-container reveal" aria-label="Capabilities">
+        <article class="ability-card" data-card-id="1">
+          <small>AI · DATA TRAINING</small>
+          <h3>数据训练</h3>
+          <p>从数据标准、标注策略到质量闭环，把底层训练数据做得稳定、可用、可复盘。</p>
+          <span>Data Standard · Annotation · Quality Gate</span>
+        </article>
+        <article class="ability-card" data-card-id="2">
+          <small>AI · MODEL EVALUATION</small>
+          <h3>模型评测</h3>
+          <p>设计评测维度、样本集和评分口径，识别模型在事实性、鲁棒性和表达上的短板。</p>
+          <span>Benchmark · Rubric · Error Taxonomy</span>
+        </article>
+        <article class="ability-card" data-card-id="3">
+          <small>AI · QUALITY LOOP</small>
+          <h3>质检闭环</h3>
+          <p>建立抽检、复审、问题归因和返修流程，让团队输出保持一致的质量水位。</p>
+          <span>Review · SOP · Feedback Loop</span>
+        </article>
+        <article class="ability-card" data-card-id="4">
+          <small>AI · WORKFLOW</small>
+          <h3>AI 工作流</h3>
+          <p>组合 Codex、Claude、Gemini 等工具完成批处理、文案校验、数据分析和流程自动化。</p>
+          <span>Prompt · Toolchain · Automation</span>
+        </article>
+      </div>
+    </section>
+
+    <section id="work" class="work section">
+      <div class="section-head reveal">
+        <h2>WHAT I HAVE DONE</h2>
+        <p>不止于“单点突破”，更在于系统建构。5个维度，构成了我能力的全部。</p>
+      </div>
+      <div class="scroll-stack-scroller reveal">
+        <div class="scroll-stack-inner">
+        <article class="scroll-stack-card work-card">
+          <small>01 · AI · DATA ENGINEERING</small>
+          <h3>高质量标注数据工程体系</h3>
+          <p>定义 Caption 质量标准，搭建“机器预标 → 人工精修 → 自动质检 → 混合产线”的闭环，用视觉设计背景精标多维样本，提升模型训练数据稳定性。</p>
+          <span>SOP · Quality Gate · Data Flywheel</span>
+        </article>
+        <article class="scroll-stack-card work-card">
+          <small>02 · AI · MODEL EVALUATION</small>
+          <h3>多模态模型评测矩阵</h3>
+          <p>围绕图像理解、文本生成、事实一致性和指令遵循建立评分 Rubric，沉淀错误类型库，让模型问题能被定位、归因和复测。</p>
+          <span>Rubric · Benchmark · Error Taxonomy</span>
+        </article>
+        <article class="scroll-stack-card work-card">
+          <small>03 · AI · REVIEW SYSTEM</small>
+          <h3>评测质检与复审闭环</h3>
+          <p>设计抽样复审、争议样本复盘和团队校准机制，把单点经验转成可复制流程，减少主观评分漂移。</p>
+          <span>Sampling · Calibration · Review</span>
+        </article>
+        <article class="scroll-stack-card work-card">
+          <small>04 · AI · PROMPT OPS</small>
+          <h3>Prompt 与工具链评测优化</h3>
+          <p>对 Claude、Codex、Gemini 等工具进行场景化测试，比较长文本、代码、翻译、摘要和批处理能力，形成使用策略。</p>
+          <span>Prompt · Tool Test · Workflow</span>
+        </article>
+        <article class="scroll-stack-card work-card">
+          <small>05 · AI · TRAINING</small>
+          <h3>团队 SOP 与能力培训</h3>
+          <p>把复杂评测规则拆成新人可理解的操作手册、案例库和检查清单，缩短上手时间，提高交付一致性。</p>
+          <span>Training · Playbook · Team Enablement</span>
+        </article>
+        <div class="scroll-stack-end" aria-hidden="true"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="partners" class="partners section">
+      <div class="section-head reveal">
+        <h2>COLLABORATORS</h2>
+        <p>我不是一个人在工作，这是我和工具之间的分工。</p>
+        <span>[ AI PARTNERS + INFRASTRUCTURE ]</span>
+      </div>
+      <div class="tool-grid">
+        <article class="tool-card reveal"><b>✹</b><small>[AI]</small><h3>Claude</h3><p>复杂问题拆解、策略推演和长文本判断。</p><em>Strategy · Writing · Architect</em></article>
+        <article class="tool-card reveal"><b>◎</b><small>[AI]</small><h3>Codex</h3><p>前端实现、代码生成、调试和自动化流程。</p><em>Code · Refactor · Auto</em></article>
+        <article class="tool-card reveal"><b>✦</b><small>[AI]</small><h3>Gemini</h3><p>文本批处理、摘要、翻译和多模态对照。</p><em>Copy · Translate · Research</em></article>
+        <article class="tool-card reveal"><b>◇</b><small>[AI]</small><h3>GPT</h3><p>评测口径整理、Prompt 迭代和案例库生成。</p><em>Prompt · QA · Knowledge</em></article>
+        <article class="tool-card reveal"><b>{ }</b><small>[INFRA]</small><h3>VS Code</h3><p>写文档、做网页、调脚本的主要工作台。</p><em>Editor · Build · Ship</em></article>
+        <article class="tool-card reveal"><b>Git</b><small>[INFRA]</small><h3>GitHub</h3><p>沉淀项目、版本和工具实验记录。</p><em>Version · Repo · Extension</em></article>
+      </div>
+    </section>
+
+    <section id="contact" class="contact section">
+      <div class="contact-title reveal">
+        <h2>LET'S BUILD<br>SOMETHING<br>SHARP.</h2>
+      </div>
+      <div class="contact-list reveal">
+        <a href="mailto:2231421923@qq.com"><span>EMAIL</span><strong>2231421923@qq.com</strong></a>
+        <button type="button"><span>PHONE</span><strong>待填写</strong></button>
+        <button type="button"><span>WECHAT</span><strong>dream-2231421923</strong></button>
+        <button id="qr-open" type="button"><span>WECHAT QR</span><strong>点击获取</strong></button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>© MARK</span>
+    <span>THANK YOU FOR VISITING</span>
+  </footer>
+
+  <div class="qr-modal" id="qr-modal" aria-hidden="true">
+    <div class="qr-panel" role="dialog" aria-modal="true" aria-label="WeChat QR">
+      <button id="qr-close" type="button" aria-label="Close">×</button>
+      <small>WECHAT QR</small>
+      <div class="qr-placeholder qr-image-wrap">
+        <img src="assets/wechat-qr.jpg" alt="Mark 的微信二维码">
+      </div>
+      <p>扫一扫，添加我为朋友。</p>
+    </div>
+  </div>
+
+  <script src="script.js?v=20260608-1"></script>
+</body>
+</html>
